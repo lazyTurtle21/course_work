@@ -54,15 +54,14 @@ def write_to_csv(messages):
         data_names.append(str(mess['commenter']['name']))
         data_text.append(mess['message']['body'])
     # print(len(data_text), len(data_time), len(data_names), len(messages))
-    d1 = pandas.DataFrame(list(set(data_time)))
-    d2 = pandas.DataFrame(list(set(data_names)))
-    d3 = pandas.DataFrame(list(set(data_text)))
+    d1 = pandas.DataFrame(data_time)
+    d2 = pandas.DataFrame(data_names)
+    d3 = pandas.DataFrame(data_text)
     d = pandas.concat([d1, d2, d3], axis=1)
     d.to_csv('chat.csv')
 
 
 def main():
-    client_secret = '1i3u391r3wyds08klccqlv55oxckdb'
     channel = 'lirik'
     client_id = 'sm19jhp9zr3nnky9xrph351wui00x0'
     general = get_channel_info(channel, client_id)
@@ -70,13 +69,11 @@ def main():
     channel_id = general['users'][0]['_id']
     stream = get_streaming_info(channel_id, client_id)
     print(stream)
-
     vod_id = '239338632'
     vod_info = get_vod(vod_id, client_id)
     print(vod_info)
     messages = []
     messages += get_messages(vod_id, client_id)
-
     print(messages)
     write_to_csv(messages)
 
