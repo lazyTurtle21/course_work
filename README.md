@@ -1,6 +1,6 @@
 # Twitch Chat Analysis
 
-> Sentimental analysis of Twitch chat
+> Sentiment analysis of Twitch chat
 
 project on OOP
 ## Release History
