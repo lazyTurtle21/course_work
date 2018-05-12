@@ -3,7 +3,7 @@ import json
 
 from modules.dataADT import Date
 
-"""Добрий день! Пам'ятаєте, я казала, що мені потрібно обговорити свою курсову роботу? На жаль, не змогла бути на консультації в п'ятницю. Чи можна з вами поговорити в будь-який день наступного тижня, але бажано швидше за п'ятницю?"""
+
 class Stream:
     """Class for representation Twitch Stream"""
     def __init__(self, channel_id, client_id):
