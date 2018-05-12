@@ -1,0 +1,8 @@
+{
+  "HOST": "irc.chat.twitch.tv",
+  "PORT": 6667,
+  "AUTH_NICK": "lazyturtle2159",
+  "AUTH_PASS": "oauth:bw5pjc9v3qv0j52a7i88tddrs5gz9z",
+  "channel": "lirik",
+  "client_id": "sm19jhp9zr3nnky9xrph351wui00x0"
+}
