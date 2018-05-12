@@ -13,3 +13,10 @@ project on OOP
     * CHANGE: Update docs
     * CHANGE: Update readme (module code remains unchanged)
     * CHANGE: Created example.py
+* 0.0.3
+    * CHANGE: Update docs
+    * CHANGE: Created dataADT.py
+* 0.0.4
+    * CHANGE: Update docs
+    * CHANGE: Update readme
+    * CHANGE: Created Video.py, Stream.py, config.json, requirements.txt
