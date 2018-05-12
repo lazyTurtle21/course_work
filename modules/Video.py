@@ -50,11 +50,11 @@ class Video:
     def comments(self):
         """Get all chat messages from recorded video"""
         fragment: dict = {'_next': ''}
-        c = 5
         while '_next' in fragment:
             fragment = self._comment_fragment(fragment['_next'])
             for comment in fragment['comments']:
-                self.messages.append({'created_at': comment['created_at'][:-1],
+                self.messages.append({'created_at':
+                                      Date(comment['created_at'][:-1]),
                                       'commenter_name':
                                           comment['commenter']['display_name'],
                                       'message': comment['message']['body']})
@@ -66,7 +66,7 @@ class Video:
         data_time, data_names, data_text = [], [], []
 
         for mess in self.messages:
-            data_time.append(mess['created_at'][:-1])
+            data_time.append(str(mess['created_at']))
             data_names.append(str(mess['commenter_name']))
             data_text.append(mess['message'])
 
@@ -155,6 +155,7 @@ class Video:
 
 
 if __name__ == '__main__':
-    video = Video('https://www.twitch.tv/videos/260145764')
+    video = Video('https://www.twitch.tv/videos/260297159')
     video.write_to_csv()
     print('ds')
+
