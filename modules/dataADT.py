@@ -1,3 +1,6 @@
+import math
+
+
 class Date:
     def __init__(self, data):
         """Creates an object instance for the specified Gregorian date."""
@@ -7,22 +10,22 @@ class Date:
         year, month, day = date[0], date[1], date[2]
         hour, mint, sec = time[0], time[1], time[2]
 
-        assert all(len(x) == 2 for x in (day, month)), 'Invalid date'
-
         month = month[1] if month[0] == '0' else month
         day = day[1] if day[0] == '0' else day
 
-        assert all(x.isdigit() for x in (day, month, year)), 'Invalid date'
+        assert all(x.isdigit() for x in (day, month, year, hour,
+                                         mint)), 'Invalid date'
 
-        day, month, year = int(day), int(month), int(year)
+        hour, mint, sec, year, month, day = int(hour), int(mint), float(sec), \
+                                            int(year), int(month), int(day)
 
         assert self._is_valid_gregorian(day, month, year), \
             "Invalid Gregorian date."
 
         tmp = -1 if month < 3 else 0
-        self._julianDay = day - 32075 + (1461 * (year + 4800 + tmp) // 4) + \
-                          (367 * (month - 2 - tmp * 12) // 12) \
-                          - (3 * ((year + 4900 + tmp) // 100) // 4)
+        self._julianDay = day - 32075 + (1461 * (year + 4800 + tmp) // 4) +\
+                                        (367 * (month - 2 - tmp * 12) // 12)\
+                              - (3 * ((year + 4900 + tmp) // 100) // 4)
         self._seconds = sec + mint * 60 + hour * 3600
 
     def month(self):
@@ -52,8 +55,8 @@ class Date:
     def _to_clock(self):
         """Return time in format (hours, minutes, seconds)"""
         hour = self._seconds // 3600
-        minutes = (self._seconds / 3600 - hour) // 60
-        seconds = self._seconds - (hour * 3600 + minutes * 60)
+        minutes = math.floor((self._seconds / 3600 - hour) * 60)
+        seconds = round(self._seconds - ((hour * 3600) + (minutes * 60)), 2)
         return hour, minutes, seconds
 
     def day_of_week(self):
@@ -74,7 +77,7 @@ class Date:
         """Return Date as a string"""
         day, month, year = self._to_gregorian()
         hour, minutes, second = self._to_clock()
-        return "%02d/%02d/%04d/%02d/%02d/%04d" % (day, month, year, hour,
+        return "%02d/%02d/%04d %02d:%02d:%.2f" % (day, month, year, hour,
                                                   minutes, second)
 
     def __eq__(self, otherdate):
@@ -106,4 +109,5 @@ class Date:
 
 if __name__ == '__main__':
     data = '2018-03-16T12:59:59.045'
-    Date(data)
+    data = Date('2018-03-16T12:59:59.045')
+    print(data)
