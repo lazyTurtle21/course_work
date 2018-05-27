@@ -1,5 +1,7 @@
 import math
 
+from copy import deepcopy
+
 
 class Date:
     def __init__(self, data):
@@ -23,9 +25,9 @@ class Date:
             "Invalid Gregorian date."
 
         tmp = -1 if month < 3 else 0
-        self._julianDay = day - 32075 + (1461 * (year + 4800 + tmp) // 4) +\
-                                        (367 * (month - 2 - tmp * 12) // 12)\
-                              - (3 * ((year + 4900 + tmp) // 100) // 4)
+        self._julianDay = day - 32075 + (1461 * (year + 4800 + tmp) // 4) + \
+                          (367 * (month - 2 - tmp * 12) // 12) \
+                          - (3 * ((year + 4900 + tmp) // 100) // 4)
         self._seconds = sec + mint * 60 + hour * 3600
 
     def month(self):
@@ -52,12 +54,20 @@ class Date:
         """Extracts the appropriate time component."""
         return self._to_clock()[2]
 
+    def time(self):
+        time = self._to_clock()
+        for i in range(len(time)):
+            time[i] = str(time[i])
+            if len(time[i]) < 2:
+                time[i] = '0' + time[i]
+        return '{}:{}:{}'.format(time[0], time[1], time[2])
+
     def _to_clock(self):
         """Return time in format (hours, minutes, seconds)"""
         hour = self._seconds // 3600
         minutes = math.floor((self._seconds / 3600 - hour) * 60)
         seconds = round(self._seconds - ((hour * 3600) + (minutes * 60)), 2)
-        return hour, minutes, seconds
+        return [int(hour), int(minutes), seconds]
 
     def day_of_week(self):
         """Returns day of the week as an int between 0 (Mon) and 6 (Sun)."""
@@ -82,15 +92,32 @@ class Date:
 
     def __eq__(self, otherdate):
         """Logically compares the two dates."""
-        return self._julianDay == otherdate._julianDay
+        return self._seconds == otherdate._seconds
 
     def __lt__(self, other):
         """Logically compares the two dates."""
-        return self._julianDay < other._julianDay
+        return self._seconds < other._seconds
 
     def __le__(self, other):
         """Logically compares the two dates."""
-        return self._julianDay <= other._julianDay
+        return self._seconds <= other._seconds
+
+    def __gt__(self, other):
+        """Logically compares the two dates."""
+        return self._julianDay >= other._julianDay \
+               and self._seconds > other._seconds
+
+    def __add__(self, other: int):
+        """Return new Date as self + other(seconds"""
+        res = deepcopy(self)
+        res._seconds += other
+        return res
+
+    def __sub__(self, other: int):
+        """Return new Date as self - other(seconds"""
+        res = deepcopy(self)
+        res._seconds -= other
+        return res
 
     def _to_gregorian(self):
         """Turn julian date into gregorian"""
