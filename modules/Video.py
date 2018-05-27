@@ -3,11 +3,14 @@ import pandas
 import json
 import os
 
+from copy import deepcopy
 from modules.dataADT import Date
+from SentimentAnalysis import Analysor
 
 
 class Video:
     """Class for representation information about recorded Twitch stream"""
+
     def __init__(self, url):
         self.vod_id = url.split('/')[-1]
         self.messages = []
@@ -35,8 +38,8 @@ class Video:
             headers=headers)
         if response.status_code != requests.codes.ok:
             print('\n[Error]')
-            print('Twitch API returned status code {}. Please check your'
-                  ' client ID.'.format(response.status_code))
+            print('Twitch API returned status code {}. Please check your '
+                  'client ID.'.format(response.status_code))
             print('\nUrl\t{}\nParams\t{}\nHeaders\t{}\n'.format(response.url,
                                                                 params,
                                                                 headers))
@@ -54,10 +57,47 @@ class Video:
             fragment = self._comment_fragment(fragment['_next'])
             for comment in fragment['comments']:
                 self.messages.append({'created_at':
-                                      Date(comment['created_at'][:-1]),
+                                          Date(comment['created_at'][:-1]),
                                       'commenter_name':
                                           comment['commenter']['display_name'],
                                       'message': comment['message']['body']})
+
+    def full_read(self):
+        """Get all chat messages from recorded video and write them to csv"""
+        fragment: dict = {'_next': ''}
+        analyser = Analysor()
+        data_time, result = [], []
+        data = []
+        start = None
+        while '_next' in fragment:
+            date = Date(fragment['comments'][0]['created_at'][:-1])
+            if not start or date > start + 60:
+                start = date
+            for mess in fragment['comments']:
+                current = Date(mess['created_at'][:-1])
+                data.append([current.time(),
+                            analyser.
+                            get_sentiment(mess['message']['body'])[1]])
+                if current > start + 60:
+                    fragment['comments'] = fragment['comments']\
+                        [fragment['comments'].index(mess) + 1:]
+                    data_time.append(start.time())
+                    result.append(sum(x[1] for x in data) // len(data))
+                    start = current
+                    data = []
+            fragment = self._comment_fragment(fragment['_next'])
+
+        d1 = pandas.DataFrame(data_time)
+        d2 = pandas.DataFrame(result)
+        d = pandas.concat([d1, d2], axis=1)
+
+        outname = '{}_v{}.csv'.format(self.vod_id, self.name())
+        outdir = '../analysis'
+        if not os.path.exists(outdir):
+            os.mkdir(outdir)
+
+        fullname = os.path.join(outdir, outname)
+        d.to_csv(fullname)
 
     def write_to_csv(self):
         """Write comments to csv file"""
@@ -67,7 +107,7 @@ class Video:
 
         for mess in self.messages:
             data_time.append(str(mess['created_at']))
-            data_names.append(str(mess['commenter_name']))
+            data_names.append(mess['commenter_name'])
             data_text.append(mess['message'])
 
         d1 = pandas.DataFrame(data_time)
@@ -155,7 +195,6 @@ class Video:
 
 
 if __name__ == '__main__':
-    video = Video('https://www.twitch.tv/videos/260297159')
-    video.write_to_csv()
-    print('ds')
-
+    video = Video('https://www.twitch.tv/videos/261627756')
+    video.full_read()
+    #  return ['<img src="', KappaJS.template[config.emoteSize].replace('{image_id}', image_id), '" ', config.customClass === null ? '' : 'class="' + config.customClass + '" ', 'alt="', name, '">'].join('');
