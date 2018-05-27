@@ -20,3 +20,6 @@ project on OOP
     * CHANGE: Update docs
     * CHANGE: Update readme
     * CHANGE: Created Video.py, Stream.py, config.json, requirements.txt
+* 0.0.5
+    * CHANGE: Updated Video.py, dataADT.py
+    * CHANGE: Created SentimentAnalysis.py, visualise.py
